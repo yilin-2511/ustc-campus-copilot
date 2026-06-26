@@ -28,8 +28,24 @@ from conversation_memory import ConversationMemory
 # ============================================================
 # 配置
 # ============================================================
-API_KEY = os.environ.get("DEEPSEEK_API_KEY", "sk-l5k0LeqnoqudJtEhp4kNCw")
+# 尝试从 .env 文件加载（如果存在）
+try:
+    from dotenv import load_dotenv
+    _env_file = Path(__file__).resolve().parent.parent / ".env"
+    if _env_file.exists():
+        load_dotenv(_env_file)
+except ImportError:
+    pass  # python-dotenv 可选
+
+API_KEY = os.environ.get("DEEPSEEK_API_KEY", "")
 API_BASE = os.environ.get("DEEPSEEK_API_BASE", "https://api.llm.ustc.edu.cn/v1")
+if not API_KEY:
+    raise RuntimeError(
+        "请设置 DEEPSEEK_API_KEY 环境变量。\n"
+        "  方法1: 在项目根目录创建 .env 文件（参考 .env.example）\n"
+        "  方法2: 在终端设置环境变量\n"
+        "  API Key 可在 https://api.llm.ustc.edu.cn 申请"
+    )
 MODEL = os.environ.get("ROUTER_MODEL", "deepseek-v4-pro")
 MAX_TOOL_ROUNDS = 3  # 单轮最多工具调用次数
 TEMPERATURE = 0.3

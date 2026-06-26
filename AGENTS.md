@@ -146,7 +146,7 @@
 |------|------|
 | Python | `D:/conda/envs/campus-copilot/python.exe` |
 | 环境激活 | `conda activate campus-copilot` |
-| LLM API | `https://api.llm.ustc.edu.cn/v1`，key: `sk-l5k0LeqnoqudJtEhp4kNCw` |
+| LLM API | `https://api.llm.ustc.edu.cn/v1`，每个用户需在 .env 配置自己的 Key |
 | 默认模型 | `deepseek-v4-pro` |
 | 编码问题 | Windows 终端不支持 UTF-8 中文，脚本执行需加 `PYTHONIOENCODING=utf-8` |
 

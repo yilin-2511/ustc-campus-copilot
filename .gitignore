@@ -29,7 +29,7 @@ data/raw/n7teahouse/_archived_*/
 
 # 环境变量 / 密钥
 .env
-*.env.local
+.env.local
 
 # 临时文件
 *.tmp

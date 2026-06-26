@@ -68,18 +68,17 @@ PYTHONIOENCODING=utf-8 python scripts/build_knowledge_base.py --rebuild
 
 ### 配置 API Key
 
-```bash
-# 设置 LLM API 密钥（USTC 校内 API 网关）
-# Windows PowerShell:
-$env:DEEPSEEK_API_KEY="sk-l5k0LeqnoqudJtEhp4kNCw"
-$env:DEEPSEEK_API_BASE="https://api.llm.ustc.edu.cn/v1"
+每位用户需要申请自己的 LLM API Key（USTC 校内网关）。
 
-# Linux / macOS / Git Bash:
-export DEEPSEEK_API_KEY="sk-l5k0LeqnoqudJtEhp4kNCw"
-export DEEPSEEK_API_BASE="https://api.llm.ustc.edu.cn/v1"
+```bash
+# 1. 复制环境变量模板
+cp .env.example .env
+
+# 2. 编辑 .env，填入你的 API Key
+# DEEPSEEK_API_KEY=你的key
 ```
 
-> 如果未设置环境变量，`router_agent.py` 会使用默认值。
+> API Key 申请地址：https://api.llm.ustc.edu.cn（校内访问）
 
 ### 运行 Router Agent
 

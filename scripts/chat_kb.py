@@ -18,11 +18,11 @@ embedding_fn = SentenceTransformerEmbeddingFunction(model_name=EMBED_MODEL)
 client = chromadb.PersistentClient(path="chroma_db")
 collection = client.get_collection("campus_knowledge", embedding_function=embedding_fn)
 
-# LLM query 重写
-os.environ["DEEPSEEK_API_KEY"] = "sk-l5k0LeqnoqudJtEhp4kNCw"
-os.environ["DEEPSEEK_API_BASE"] = "https://api.llm.ustc.edu.cn/v1"
+# LLM query 重写（从环境变量读取 API Key）
+DEEPSEEK_API_KEY = os.environ.get("DEEPSEEK_API_KEY", "")
+DEEPSEEK_API_BASE = os.environ.get("DEEPSEEK_API_BASE", "https://api.llm.ustc.edu.cn/v1")
 from openai import OpenAI
-llm = OpenAI(api_key=os.environ["DEEPSEEK_API_KEY"], base_url=os.environ["DEEPSEEK_API_BASE"])
+llm = OpenAI(api_key=DEEPSEEK_API_KEY, base_url=DEEPSEEK_API_BASE)
 
 def rewrite_query(query):
     """用 LLM 扩展查询词，消歧短词和黑话"""
