@@ -39,32 +39,13 @@
 - Python 3.10+
 - Git
 
-### 一键安装
-
 ```bash
 git clone https://github.com/yilin-2511/ustc-campus-copilot.git
 cd ustc-campus-copilot
 python scripts/setup.py
 ```
 
-`setup.py` 会自动完成：
-1. 安装 Python 依赖（`requirements.txt`）
-2. 从 ModelScope 下载 m3e-base 嵌入模型
-3. 从 `n7_qa_knowledge.json` 构建 ChromaDB 向量库
-
-### 手动安装（如果自动安装失败）
-
-```bash
-# 1. 安装依赖
-pip install -r requirements.txt
-
-# 2. 下载 m3e-base 模型（需要 modelscope）
-pip install modelscope
-python -c "from modelscope import snapshot_download; snapshot_download('xrunda/m3e-base', cache_dir='models/xrunda')"
-
-# 3. 构建 ChromaDB
-PYTHONIOENCODING=utf-8 python scripts/build_knowledge_base.py --rebuild
-```
+`setup.py` 自动完成依赖安装 → 模型下载 → 向量库构建。如果某步失败，单独重试那一步即可。
 
 ### 配置 API Key
 
