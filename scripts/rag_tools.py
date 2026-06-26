@@ -2,6 +2,8 @@
 RAG 知识库查询工具 — 供 Router Agent 调用
 ===========================================
 封装 ChromaDB 查询，返回结构化结果供 LLM 合成回答。
+SentenceTransformerEmbeddingFunction 内部有类级别模型缓存，
+相同 model_name 只加载一次权重，后续查询直接复用。
 独立运行测试: python scripts/rag_tools.py "保研需要什么条件"
 """
 from __future__ import annotations
@@ -15,24 +17,27 @@ COLLECTION_NAME = "campus_knowledge"
 TOP_K = 5
 SIMILARITY_CUTOFF = 0.5
 
-# 模块级单例，避免重复加载模型
-_embedding_fn = None
+# 模块级单例 —— embedding function 只创建一次
 _client = None
 _collection = None
 
 
 def _get_collection():
-    """延迟初始化 ChromaDB 连接和嵌入模型"""
-    global _embedding_fn, _client, _collection
+    """延迟初始化 ChromaDB 连接。
+
+    SentenceTransformerEmbeddingFunction 内部维护了类级别的模型字典
+    (models: Dict[str, Any] = {})，相同 model_name 只加载一次模型。
+    """
+    global _client, _collection
     if _collection is None:
         import chromadb
         from chromadb.utils.embedding_functions import (
             SentenceTransformerEmbeddingFunction,
         )
-        _embedding_fn = SentenceTransformerEmbeddingFunction(model_name=EMBED_MODEL)
+        ef = SentenceTransformerEmbeddingFunction(model_name=EMBED_MODEL)
         _client = chromadb.PersistentClient(path=CHROMA_DIR)
         _collection = _client.get_collection(
-            COLLECTION_NAME, embedding_function=_embedding_fn
+            COLLECTION_NAME, embedding_function=ef
         )
     return _collection
 
