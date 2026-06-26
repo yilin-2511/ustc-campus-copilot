@@ -1,0 +1,636 @@
+[
+  {
+    "id": "ustcforum",
+    "name": "南七茶馆",
+    "url": "https://ustcforum.com",
+    "category": "论坛社区",
+    "description": "科大非官方校园论坛，涵盖求助答疑、生涯规划、课程学术、校园生活、技术教程等话题。唯一有公开API的校园平台。",
+    "needLogin": false,
+    "keywords": ["保研","考研","选课","暑研","实习","导师","实验室","转专业","心态","焦虑","内耗","秋招","出国","托福","雅思","夏令营","GPA","食堂","宿舍","社团","感情","人际"],
+    "routeRules": [
+      {"when": "用户咨询保研/考研/升学相关问题", "action": "搜索南七茶馆RAG知识库获取过来人经验"},
+      {"when": "用户咨询选课避坑、老师评价", "action": "搜索RAG知识库获取主观评价，同时引导到评课社区看打分"},
+      {"when": "用户咨询校园生活、宿舍、食堂体验", "action": "搜索RAG知识库获取真实体验"},
+      {"when": "用户倾诉心理困惑、焦虑迷茫", "action": "用RAG知识库中相似经历的帖子回应"}
+    ],
+    "tips": "论坛帖子代表学生真实体验，时效性不定。重要信息结合官方渠道确认。"
+  },
+  {
+    "id": "icourse",
+    "name": "USTC评课社区",
+    "url": "https://icourse.club",
+    "category": "课程评价",
+    "description": "科大课程评价平台，42,539条点评覆盖18,635门课程。包含评分、难度、作业量、给分好坏、收获大小五个维度。",
+    "needLogin": false,
+    "keywords": ["选课","老师","给分","课程评价","通识课","公选课","必修课","哪个老师好","水课","硬课","优秀率","挂科","推荐课程"],
+    "routeRules": [
+      {"when": "用户问某门课怎么样/哪个老师好", "action": "引导到 icourse.club/course/ 搜索课程名"},
+      {"when": "用户想选水课/通识课", "action": "引导按给分好坏排序，选难度简单+作业少的课"},
+      {"when": "用户问某老师是否推荐", "action": "引导搜索老师名，看最近学期评价趋势"}
+    ],
+    "tips": "关注'给分好坏'和'收获大小'。同一课程不同老师评分差异大，注意区分。"
+  },
+  {
+    "id": "catalog",
+    "name": "公共查询（教务）",
+    "url": "https://catalog.ustc.edu.cn/query/",
+    "category": "教务信息",
+    "description": "教务系统公开查询入口，无需登录。全校开课列表(2520个课堂)、考试安排、教室使用情况、培养方案、替代课程。有REST API。",
+    "needLogin": false,
+    "keywords": ["课表","开课","教室","空闲教室","考试安排","期末考试","期中考试","培养方案","课程替代","学分","选课容量"],
+    "routeRules": [
+      {"when": "用户查某门课上课时间/地点", "action": "引导到 全校开课查询，输入课程名"},
+      {"when": "用户想找空教室自习", "action": "引导到 教室使用情况查询，选教学楼和日期"},
+      {"when": "用户查考试时间", "action": "引导到 考试查询，选学期和考试类型"},
+      {"when": "用户查培养方案", "action": "引导到 培养方案，选专业和年级"}
+    ],
+    "tips": "数据实时更新。按院系、课程类型筛选。教室查询选具体教学楼+日期即可。"
+  },
+  {
+    "id": "jw",
+    "name": "综合教务系统",
+    "url": "https://jw.ustc.edu.cn/",
+    "category": "教务管理",
+    "description": "核心教务操作平台：选课、查成绩、看课表、考试报名、学籍管理。需要CAS统一身份认证登录。",
+    "needLogin": true,
+    "keywords": ["成绩","选课","课表","GPA","绩点","加权","排名","双学位","辅修","缓考","补考","退课","重修"],
+    "routeRules": [
+      {"when": "用户想查成绩/GPA", "action": "引导登录 jw.ustc.edu.cn 查看"},
+      {"when": "用户需要选课", "action": "引导在选课时间登录操作，提醒选课批次和时间"},
+      {"when": "用户问双学位/辅修", "action": "引导查看教务系统相关政策和申请入口"}
+    ],
+    "tips": "选课期间系统拥堵，建议错峰。成绩通常期末后2-3周开放查询。CAS登录（学号+密码）。"
+  },
+  {
+    "id": "teach",
+    "name": "教务处官网",
+    "url": "https://www.teach.ustc.edu.cn/",
+    "category": "教务管理",
+    "description": "科大教务处官方网站。选课通知、学籍管理、转专业政策、推免办法、毕业要求等官方教务文件。",
+    "needLogin": false,
+    "keywords": ["教务处","选课通知","转专业","学籍","休学","推免名额","保研政策","毕业要求","教学日历"],
+    "routeRules": [
+      {"when": "用户问转专业/休学/毕业等官方政策", "action": "引导到教务处官网查看最新红头文件"},
+      {"when": "用户问选课时间节点", "action": "引导到教务处选课专栏查看日程"}
+    ],
+    "tips": "时效性强，务必看最新日期。官方政策以教务处文件为准，论坛经验仅供参考。"
+  },
+  {
+    "id": "course",
+    "name": "瀚海教学网",
+    "url": "https://course.ustc.edu.cn/",
+    "category": "在线学习",
+    "description": "科大在线教学平台(Blackboard)，用于课件下载、作业提交、在线讨论。102,103名用户，2,880门课程。部分内容需登录。",
+    "needLogin": true,
+    "keywords": ["课件","作业","网课","在线课程","课程资料","教学资源","Blackboard","提交","讨论板"],
+    "routeRules": [
+      {"when": "用户找课件/课程资料", "action": "引导登录瀚海教学网，在对应课程页面下载"},
+      {"when": "用户问作业在哪里提交", "action": "引导登录查看课程作业模块"}
+    ],
+    "tips": "不是所有课都用，部分老师用自己网站或微信群。开学第一周老师会说明。"
+  },
+  {
+    "id": "ot",
+    "name": "蜗壳学社",
+    "url": "https://ot.ustc.edu.cn/",
+    "category": "在线学习",
+    "description": "科大官方学生社区平台，学习交流、经验分享、课程资料、讨论区。需要CAS登录。",
+    "needLogin": true,
+    "keywords": ["蜗壳学社","学生社区","学习交流","课程资料","讨论","笔记","真题"],
+    "routeRules": [
+      {"when": "用户找课程笔记/真题/学习资料", "action": "引导登录蜗壳学社搜索相关课程讨论区"}
+    ],
+    "tips": "需要CAS登录。部分课程有专门的资料分享帖。"
+  },
+  {
+    "id": "tam",
+    "name": "助教管理系统",
+    "url": "https://tam.cmet.ustc.edu.cn/",
+    "category": "教务管理",
+    "description": "科大助教管理平台，用于助教申请、排班、考评等。",
+    "needLogin": true,
+    "keywords": ["助教","TA","助教申请","助教排班"],
+    "routeRules": [
+      {"when": "用户问助教相关（申请/排班/考评）", "action": "引导登录 tam.cmet.ustc.edu.cn"}
+    ],
+    "tips": "研究生可申请助教岗位。不同院系有独立助教管理流程。"
+  },
+  {
+    "id": "library",
+    "name": "图书馆",
+    "url": "https://lib.ustc.edu.cn/",
+    "category": "学习资源",
+    "description": "科大图书馆官网。东/西/高新三馆开放时间、馆藏分布、图书检索(opac)、数据库导航(知网/IEEE/WoS等)、讲座培训、新生专栏。",
+    "needLogin": false,
+    "keywords": ["图书馆","自习室","开馆时间","闭馆","借书","还书","数据库","知网","IEEE","Web of Science","研修室","预约","打印"],
+    "routeRules": [
+      {"when": "用户问图书馆几点开门", "action": "告知：自习室7:00-23:00，阅览室8:00-22:00，各楼层略有不同"},
+      {"when": "用户找书/借书", "action": "引导到 opac.lib.ustc.edu.cn 馆藏书目查询"},
+      {"when": "用户查论文/文献", "action": "引导到图书馆 数据库地图"},
+      {"when": "用户预约自习座位/研修室", "action": "引导到 学习空间预约 系统"}
+    ],
+    "tips": "东区5楼自习室7:00-23:00。新生先看'新生专栏'入馆教育。图书馆主页链接新生专区: lib.ustc.edu.cn/freshmen/"
+  },
+  {
+    "id": "roombooking",
+    "name": "学习空间预约",
+    "url": "https://lib.ustc.edu.cn/图书馆研修间预约系统/",
+    "category": "学习资源",
+    "description": "图书馆自习室、研修间在线预约系统。",
+    "needLogin": true,
+    "keywords": ["自习","研修室","研讨室","座位预约","中区","西区"],
+    "routeRules": [
+      {"when": "用户想预约图书馆座位/研修间", "action": "引导到图书馆 学习空间预约 系统登录预约"}
+    ],
+    "tips": "需要提前预约。中区研修室另有 roombooking.cmet.ustc.edu.cn 独立系统。"
+  },
+  {
+    "id": "studyroom",
+    "name": "中区研修室预约",
+    "url": "http://roombooking.cmet.ustc.edu.cn/",
+    "category": "学习资源",
+    "description": "中区教学楼研修室独立预约系统。",
+    "needLogin": true,
+    "keywords": ["中区","研修室","讨论室","研讨","小组讨论"],
+    "routeRules": [
+      {"when": "用户问中区研修室/讨论教室", "action": "引导到 roombooking.cmet.ustc.edu.cn 预约"}
+    ],
+    "tips": "与图书馆研修室是不同的系统。适合小组讨论和项目协作。"
+  },
+  {
+    "id": "mail",
+    "name": "科大邮箱",
+    "url": "https://mail.ustc.edu.cn/",
+    "category": "校园服务",
+    "description": "科大官方学生邮箱（@mail.ustc.edu.cn），用于校内通讯、学术联系。入学自动开通。",
+    "needLogin": true,
+    "keywords": ["邮箱","邮件","学生邮箱","ustc邮箱","学校邮箱"],
+    "routeRules": [
+      {"when": "用户问科大邮箱怎么登录/使用", "action": "引导到 mail.ustc.edu.cn，用CAS统一认证登录"}
+    ],
+    "tips": "邮箱地址为 学号@mail.ustc.edu.cn。用于联系老师、申请夏令营/暑研等重要场合，建议定期查看。"
+  },
+  {
+    "id": "wlt",
+    "name": "网络通",
+    "url": "http://wlt.ustc.edu.cn/",
+    "category": "校园服务",
+    "description": "科大校园网络管理平台。网络账号管理、上网认证、流量查询、校园网故障报修。",
+    "needLogin": true,
+    "keywords": ["校园网","上网","wifi","eduroam","网络通","流量","断网","IP"],
+    "routeRules": [
+      {"when": "用户问校园网怎么连/WiFi密码", "action": "引导到 wlt.ustc.edu.cn 查看上网指南"},
+      {"when": "用户网络出问题/流量超额", "action": "引导登录网络通查看状态和流量"}
+    ],
+    "tips": "校园WiFi: ustc-eduroam（用学号@ustc.edu.cn登录）。每月有免费流量额度。"
+  },
+  {
+    "id": "iustc",
+    "name": "校园信息门户",
+    "url": "https://i.ustc.edu.cn/",
+    "category": "校园服务",
+    "description": "科大一站式校园信息门户，聚合个人课表、成绩、一卡通、通知等入口。学生常用功能的统一起点。",
+    "needLogin": true,
+    "keywords": ["信息门户","个人主页","校园门户","我的科大","dashboard"],
+    "routeRules": [
+      {"when": "用户不知道从哪开始/找个人教务信息", "action": "引导到 i.ustc.edu.cn，作为一站式入口"}
+    ],
+    "tips": "可以看作校园功能的'个人首页'。课表、成绩、一卡通、邮件等常用入口都聚合在这里。"
+  },
+  {
+    "id": "pan",
+    "name": "科大云盘",
+    "url": "https://pan.ustc.edu.cn/",
+    "category": "校园服务",
+    "description": "科大官方云存储服务，学生可免费使用。支持文件共享、协作编辑。",
+    "needLogin": true,
+    "keywords": ["云盘","网盘","文件共享","存储","资料分享","课件下载"],
+    "routeRules": [
+      {"when": "用户需要存/分享文件", "action": "引导到 pan.ustc.edu.cn 使用科大云盘"}
+    ],
+    "tips": "免费容量充足。支持分享链接，常用于课程资料分发。比百度网盘更适合校内场景。"
+  },
+  {
+    "id": "zbh",
+    "name": "正版软件",
+    "url": "https://zbh.ustc.edu.cn/",
+    "category": "校园服务",
+    "description": "科大正版软件平台。提供Windows、Office、MATLAB、Mathematica、Adobe等正版软件下载和激活。学生免费。",
+    "needLogin": true,
+    "keywords": ["软件","正版","Windows","Office","MATLAB","Mathematica","Adobe","下载","激活","免费软件"],
+    "routeRules": [
+      {"when": "用户问学校有没有免费正版软件", "action": "引导到 zbh.ustc.edu.cn，Windows/Office/MATLAB/Mathematica等均可免费获取"},
+      {"when": "用户问MATLAB/Mathematica怎么装", "action": "引导到正版软件平台下载并激活"}
+    ],
+    "tips": "学生免费！包括Windows、Office全家桶、MATLAB、Mathematica等。安装教程详细。"
+  },
+  {
+    "id": "mirrors",
+    "name": "开源软件镜像",
+    "url": "https://mirrors.ustc.edu.cn/",
+    "category": "技术资源",
+    "description": "科大LUG维护的开源软件镜像站，国内知名镜像源。提供Linux发行版、PyPI、npm、Docker等镜像加速。",
+    "needLogin": false,
+    "keywords": ["镜像","Linux","PyPI","npm","pip","Docker","Ubuntu","Debian","下载加速"],
+    "routeRules": [
+      {"when": "用户问pip/npm安装慢怎么办", "action": "建议使用科大镜像 mirrors.ustc.edu.cn 加速"},
+      {"when": "用户想下载Linux发行版", "action": "引导到科大镜像站，速度远快于国外源"}
+    ],
+    "tips": "国内速度最快的镜像之一。pip换源: pip install -i https://mirrors.ustc.edu.cn/pypi/web/simple。"
+  },
+  {
+    "id": "vlab",
+    "name": "Vlab虚拟实验室",
+    "url": "https://vlab.ustc.edu.cn/",
+    "category": "技术资源",
+    "description": "科大虚拟实验平台，提供在线虚拟机、GPU计算等资源。",
+    "needLogin": true,
+    "keywords": ["虚拟机","GPU","计算资源","Vlab","云计算","服务器"],
+    "routeRules": [
+      {"when": "用户需要虚拟机/GPU算力", "action": "引导到 vlab.ustc.edu.cn 申请使用"}
+    ],
+    "tips": "提供免费GPU和虚拟机资源。适合课程项目、深度学习实验等场景。"
+  },
+  {
+    "id": "latex",
+    "name": "USTC LaTeX",
+    "url": "https://latex.ustc.edu.cn/",
+    "category": "技术资源",
+    "description": "科大LaTeX在线编辑平台，提供毕业论文模板、在线编译、协作编辑。",
+    "needLogin": true,
+    "keywords": ["LaTeX","论文","毕业论文","模板","排版","Overleaf"],
+    "routeRules": [
+      {"when": "用户问毕业论文用什么写/LaTeX模板", "action": "引导到 latex.ustc.edu.cn，有官方毕业论文模板"}
+    ],
+    "tips": "有科大毕业论文/开题报告官方模板。在线编译，类似Overleaf。"
+  },
+
+  {
+    "id": "map",
+    "name": "校园地图",
+    "url": "https://map.ustc.edu.cn/",
+    "category": "校园导航",
+    "description": "科大官方校园地图，覆盖6个校区。标注所有建筑（教学楼、图书馆、食堂、宿舍），支持校车、AED、停车场等图层。",
+    "needLogin": false,
+    "keywords": ["地图","怎么走","在哪里","教学楼","二教","三教","五教","图书馆位置","食堂位置","校车","公交","快递"],
+    "routeRules": [
+      {"when": "用户问某个建筑在哪里/怎么走", "action": "引导到 map.ustc.edu.cn 搜索建筑名"},
+      {"when": "用户问校车路线/时间", "action": "引导在地图开启校车图层"}
+    ],
+    "tips": "支持标签筛选。6校区：东/中/西/北/南/高新。新生先熟悉东中西三个校区。"
+  },
+  {
+    "id": "bigscreen",
+    "name": "教室大屏",
+    "url": "http://bigscreen.cmet.ustc.edu.cn/",
+    "category": "校园导航",
+    "description": "二教/三教/五教实时教室使用状态大屏。显示每间教室当前是否有人、下节什么课。",
+    "needLogin": false,
+    "keywords": ["教室","大屏","空闲","在哪上课","教室状态","实时"],
+    "routeRules": [
+      {"when": "用户想找当前空闲教室", "action": "引导到 bigscreen.cmet.ustc.edu.cn 查看二教/三教/五教实时状态"}
+    ],
+    "tips": "在教室楼下的屏幕也可以看。网址 #/2=二教 #/3=三教 #/5=五教。"
+  },
+
+  {
+    "id": "welcome",
+    "name": "迎新网",
+    "url": "https://welcome.ustc.edu.cn/",
+    "category": "新生服务",
+    "description": "科大官方迎新网站。报到须知(流程/材料)、学习指南、奖助学指南、校园地图、全景VR、院系导航。",
+    "needLogin": false,
+    "keywords": ["报到","新生","入学","宿舍","军训","奖助学金","助学贷款","绿色通道","迎新","录取","档案","户口","党团关系"],
+    "routeRules": [
+      {"when": "用户问报到流程/需要带什么材料", "action": "引导到迎新网 报到须知 查看详细流程"},
+      {"when": "用户问奖助学金/助学贷款", "action": "引导到迎新网 奖助学指南 板块"},
+      {"when": "用户想了解各学院情况", "action": "引导到迎新网 院系导航"}
+    ],
+    "tips": "每年7-8月更新。报到须知含流程图和时间节点，新生逐条对照准备。"
+  },
+  {
+    "id": "zsb",
+    "name": "招生办公室",
+    "url": "https://zsb.ustc.edu.cn/",
+    "category": "新生服务",
+    "description": "科大招生办公室官网。招生政策、招生计划、录取查询、招生咨询联系方式。",
+    "needLogin": false,
+    "keywords": ["招生","录取","分数线","招生计划","少年班","创新班","强基计划"],
+    "routeRules": [
+      {"when": "用户问录取/招生政策", "action": "引导到 zsb.ustc.edu.cn 查看官方招生信息"}
+    ],
+    "tips": "新生录取后关注的第一个科大网站。含招生咨询组联系方式。"
+  },
+
+  {
+    "id": "stuhome",
+    "name": "学工在线",
+    "url": "https://stuhome.ustc.edu.cn/",
+    "category": "学生事务",
+    "description": "学生工作部官网。奖学金评选、助学金申请、就业通知、办事指南。",
+    "needLogin": false,
+    "keywords": ["奖学金","助学金","助学贷款","勤工助学","贫困认定","评奖评优","处分","请假","学生证","在学证明"],
+    "routeRules": [
+      {"when": "用户问奖学金申请/评选", "action": "引导到学工在线 最新通知"},
+      {"when": "用户问办事流程", "action": "引导到学工在线 办事指南"}
+    ],
+    "tips": "奖学金通知集中在5-6月和11-12月。区分国家级(国奖)和校级(郭永怀奖学金等)。"
+  },
+  {
+    "id": "xgyth",
+    "name": "学工一体化",
+    "url": "https://xgyth.ustc.edu.cn/",
+    "category": "学生事务",
+    "description": "学工一体化平台，整合学生事务、资助、评奖评优、勤工助学等。需要登录。",
+    "needLogin": true,
+    "keywords": ["学工","资助","评优","勤工助学","困难认定","补助"],
+    "routeRules": [
+      {"when": "用户问资助/勤工助学/评优", "action": "引导登录 xgyth.ustc.edu.cn 学工一体化平台办理"}
+    ],
+    "tips": "需要CAS登录。与学工在线互补：学工在线看通知，学工一体化在线办理。"
+  },
+  {
+    "id": "young",
+    "name": "第二课堂/青春科大",
+    "url": "https://young.ustc.edu.cn/",
+    "category": "活动社团",
+    "description": "第二课堂平台。活动发布与报名、第二课堂学分记录、社团管理。需要CAS登录。",
+    "needLogin": true,
+    "keywords": ["社团","活动","报名","第二课堂","学分","志愿","社会实践","讲座"],
+    "routeRules": [
+      {"when": "用户想参加活动/社团", "action": "引导登录 young.ustc.edu.cn 浏览活动和社团"},
+      {"when": "用户问第二课堂学分", "action": "告知是毕业要求之一，具体在平台内查询"}
+    ],
+    "tips": "需要CAS登录。大一尽早了解学分要求。关注'青春科大'公众号获取推送。"
+  },
+  {
+    "id": "academic_guide",
+    "name": "学业指导中心",
+    "url": "http://202.38.65.52/xyzd/",
+    "category": "学生事务",
+    "description": "科大学业指导中心，提供学业规划咨询、学习方法指导、一对一辅导等服务。",
+    "needLogin": false,
+    "keywords": ["学业指导","学习困难","挂科预警","学业规划","咨询","辅导"],
+    "routeRules": [
+      {"when": "用户学业遇到困难/需要学业规划指导", "action": "引导到学业指导中心了解咨询服务"}
+    ],
+    "tips": "提供免费学业咨询和辅导。如果感到学习困难，主动寻求帮助。"
+  },
+
+  {
+    "id": "hospital",
+    "name": "校医院",
+    "url": "https://hospital.ustc.edu.cn/",
+    "category": "医疗健康",
+    "description": "科大校医院官网。门诊排班、科室设置(内科/外科/眼科/口腔科等)、预约挂号、医保政策。",
+    "needLogin": false,
+    "keywords": ["看病","医院","校医院","门诊","急诊","牙科","眼科","体检","医保","报销","转诊"],
+    "routeRules": [
+      {"when": "用户问校医院开门/门诊", "action": "引导到校医院官网查看门诊排班"},
+      {"when": "用户问医保报销", "action": "引导到校医院医保服务板块"}
+    ],
+    "tips": "校医院在东区。紧急情况直接去附一院(安徽省立医院)。保留票据报销。"
+  },
+  {
+    "id": "ecard",
+    "name": "一卡通",
+    "url": "https://ecard.ustc.edu.cn/",
+    "category": "校园服务",
+    "description": "校园卡管理平台。余额查询、消费记录、挂失补办、门禁权限。需要CAS登录。",
+    "needLogin": true,
+    "keywords": ["校园卡","一卡通","饭卡","余额","充值","挂失","补办","消费"],
+    "routeRules": [
+      {"when": "用户问校园卡充值/挂失/补办", "action": "引导登录 ecard.ustc.edu.cn 办理"}
+    ],
+    "tips": "需要CAS登录。宿舍楼/食堂有自助充值终端。丢失后第一时间挂失。"
+  },
+  {
+    "id": "fix",
+    "name": "教室报修",
+    "url": "https://fix.ustc.edu.cn/",
+    "category": "校园服务",
+    "description": "教学设备报修(二教/三教/五教)。支持投影、桌椅、照明、打印、计算机、音响、黑板等故障报修。已处理451条。",
+    "needLogin": false,
+    "keywords": ["报修","设备坏了","投影仪","音响","黑板","桌椅","灯","打印机"],
+    "routeRules": [
+      {"when": "用户报告教室设备故障", "action": "引导到 fix.ustc.edu.cn 提交报修单"}
+    ],
+    "tips": "支持二教/三教/五教。填写准确教室号和故障描述。"
+  },
+  {
+    "id": "sf",
+    "name": "网上缴费",
+    "url": "https://sf.ustc.edu.cn/",
+    "category": "校园服务",
+    "description": "科大学费、住宿费等网上缴费平台。",
+    "needLogin": true,
+    "keywords": ["缴费","学费","住宿费","网上缴费","欠费"],
+    "routeRules": [
+      {"when": "用户问怎么交学费/住宿费", "action": "引导到 sf.ustc.edu.cn 网上缴费"}
+    ],
+    "tips": "需要CAS登录。每学期开学前完成缴费。"
+  },
+  {
+    "id": "print",
+    "name": "自助打印复印",
+    "url": "https://weixinprinthost.woquyun.com/wq-web/",
+    "category": "校园服务",
+    "description": "校园自助打印复印服务。支持手机上传文件、扫码打印。分布在图书馆、教学楼等。",
+    "needLogin": true,
+    "keywords": ["打印","复印","自助打印","扫描","成绩单打印","证明"],
+    "routeRules": [
+      {"when": "用户问哪里可以打印/复印", "action": "引导使用自助打印服务，分布在图书馆和教学楼"}
+    ],
+    "tips": "通过微信上传文件，到打印机扫码即可。比外面打印店便宜。"
+  },
+  {
+    "id": "transcript",
+    "name": "成绩单打印",
+    "url": "https://verify-transcript.cmet.ustc.edu.cn/manager.action",
+    "category": "校园服务",
+    "description": "科大官方成绩单和在学证明自助打印与验证平台。",
+    "needLogin": true,
+    "keywords": ["成绩单","在学证明","打印","盖章","验证","英文成绩单"],
+    "routeRules": [
+      {"when": "用户需要成绩单/在学证明", "action": "引导到自助打印或 verify-transcript.cmet.ustc.edu.cn"}
+    ],
+    "tips": "夏令营、出国申请常用。自助打印的成绩单带电子签章，可在线验证真伪。"
+  },
+
+  {
+    "id": "flyer",
+    "name": "飞跃网站",
+    "url": "https://ustcflyer.com/",
+    "category": "升学就业",
+    "description": "科大飞跃网站，出国留学经验分享平台。申请攻略、面经、offer汇总。",
+    "needLogin": false,
+    "keywords": ["出国","留学","申请","offer","面经","飞跃","托福","GRE","雅思","暑研","海外","PhD","硕士"],
+    "routeRules": [
+      {"when": "用户问出国留学申请经验", "action": "引导到 ustcflyer.com 查看学长学姐的申请总结和offer汇报"},
+      {"when": "用户问托福/GRE备考", "action": "引导到飞跃网站看备考经验和分数参考"}
+    ],
+    "tips": "科大出国氛围浓厚，飞跃网站积累了大量申请攻略和offer数据。按专业/国家筛选。"
+  },
+  {
+    "id": "gradschool",
+    "name": "研究生院",
+    "url": "https://gradschool.ustc.edu.cn/",
+    "category": "升学就业",
+    "description": "科大研究生院官网。研究生招生、培养、学位、学籍等信息。",
+    "needLogin": false,
+    "keywords": ["研究生","硕士","博士","硕博连读","招生简章","研究生院","学位","导师"],
+    "routeRules": [
+      {"when": "用户问研究生招生/培养政策", "action": "引导到 gradschool.ustc.edu.cn 查看官方信息"}
+    ],
+    "tips": "本校保研/考研生必看。研究生招生简章、导师名录等都在此发布。"
+  },
+  {
+    "id": "yjs",
+    "name": "研究生综合服务平台",
+    "url": "https://yjs1.ustc.edu.cn/",
+    "category": "升学就业",
+    "description": "研究生综合服务系统，用于选课、查成绩、学位申请等研究生日常事务。需要登录。",
+    "needLogin": true,
+    "keywords": ["研究生选课","研究生成绩","学位","培养计划","答辩"],
+    "routeRules": [
+      {"when": "用户(研究生)问选课/成绩/学位", "action": "引导登录 yjs1.ustc.edu.cn 研究生综合服务平台"}
+    ],
+    "tips": "研究生使用此平台而非本科教务系统。CAS登录。"
+  },
+  {
+    "id": "epc",
+    "name": "EPC英语平台",
+    "url": "https://epc.ustc.edu.cn/main.asp",
+    "category": "在线学习",
+    "description": "科大英语实践中心(English Practice Center)。英语学习资源、口语练习、写作辅导。",
+    "needLogin": true,
+    "keywords": ["英语","EPC","口语","写作","英语角","英语辅导"],
+    "routeRules": [
+      {"when": "用户想练英语/找英语学习资源", "action": "引导到 EPC 平台查看活动和学习资源"}
+    ],
+    "tips": "提供英语角、一对一写作辅导等服务。关注公众号了解活动安排。"
+  },
+
+  {
+    "id": "bbs",
+    "name": "瀚海星云BBS",
+    "url": "https://bbs.ustc.edu.cn/",
+    "category": "论坛社区",
+    "description": "科大传统BBS（瀚海星云），历史悠久。信息可能较陈旧，但保留了大量历史经验帖。",
+    "needLogin": false,
+    "keywords": ["BBS","瀚海星云","老帖","历史","经验","攻略"],
+    "routeRules": [
+      {"when": "用户找科大的历史经验/老攻略", "action": "可尝试瀚海星云BBS，但提醒信息可能过时"}
+    ],
+    "tips": "科大最古老的论坛。信息更新不如南七茶馆活跃，但部分老帖有参考价值。"
+  },
+  {
+    "id": "nan7market",
+    "name": "南七集市",
+    "url": "https://nan7market.com/",
+    "category": "论坛社区",
+    "description": "科大二手交易平台。买卖二手书、电子产品、生活用品等。",
+    "needLogin": false,
+    "keywords": ["二手","买卖","旧书","教材","交易","闲置","出售","求购"],
+    "routeRules": [
+      {"when": "用户想买/卖二手物品", "action": "引导到 nan7market.com 南七集市"},
+      {"when": "用户问教材哪里买便宜", "action": "建议去南七集市买二手教材，便宜很多"}
+    ],
+    "tips": "教材和考研资料最划算。注意当面交易，检查物品成色。"
+  },
+  {
+    "id": "bbq",
+    "name": "表白墙",
+    "url": "http://www.ustcbbq.com/",
+    "category": "论坛社区",
+    "description": "科大表白墙，匿名投稿平台。涵盖表白、吐槽、求助、寻人等内容。",
+    "needLogin": false,
+    "keywords": ["表白","匿名","吐槽","寻人","树洞","情感"],
+    "routeRules": [
+      {"when": "用户想匿名投稿/看树洞内容", "action": "引导到 ustcbbq.com 表白墙"}
+    ],
+    "tips": "匿名平台，内容真实性需自行判断。娱乐为主。"
+  },
+
+  {
+    "id": "wvpn",
+    "name": "Web VPN",
+    "url": "https://wvpn.ustc.edu.cn/",
+    "category": "技术资源",
+    "description": "科大Web VPN，校外访问校内资源（如图书馆数据库、教务系统等内网服务）的入口。",
+    "needLogin": true,
+    "keywords": ["VPN","校外","远程","访问","翻墙","内网"],
+    "routeRules": [
+      {"when": "用户在校外无法访问校内网站/数据库", "action": "引导使用 wvpn.ustc.edu.cn Web VPN"}
+    ],
+    "tips": "校外访问知网、IEEE等数据库必须通过VPN。寒暑假回家必备。CAS登录。"
+  },
+  {
+    "id": "physicslab",
+    "name": "大物实验",
+    "url": "https://jxzy.ustc.edu.cn/",
+    "category": "在线学习",
+    "description": "大学物理实验教学平台。实验选课、实验报告提交、成绩查询。多个入口(jxzy/etis/pems)。",
+    "needLogin": true,
+    "keywords": ["大物实验","物理实验","实验选课","实验报告","大雾"],
+    "routeRules": [
+      {"when": "用户问大物实验选课/交报告", "action": "引导到 jxzy.ustc.edu.cn 或 etis.ustc.edu.cn"}
+    ],
+    "tips": "大物实验有三个系统：jxzy、etis、pems。不同课程用不同平台，看老师通知。"
+  },
+
+  {
+    "id": "ustclife",
+    "name": "USTC导航",
+    "url": "https://ustc.life/",
+    "category": "网址导航",
+    "description": "科大学生维护的校园网站导航。聚合60+常用校园网站，按学习/生活/技术分类，可按点击量排序。开源(CC BY-SA 4.0)。",
+    "needLogin": false,
+    "keywords": ["网站","链接","导航","平台","哪里查","怎么找"],
+    "routeRules": [
+      {"when": "用户不知道去哪个平台查某类信息", "action": "引导到 ustc.life 浏览分类，快速找到目标平台"},
+      {"when": "用户找某个已知但忘了网址的平台", "action": "引导到 ustc.life 按分类或搜索"}
+    ],
+    "tips": "按'最多点击'排序看最常用平台。所有科大学生日常用到的网站基本都在这里了。"
+  },
+  {
+    "id": "baike",
+    "name": "校园百科",
+    "url": "https://baike.ustc.edu.cn/",
+    "category": "网址导航",
+    "description": "科大学生维护的校园知识百科。涵盖学习、生活、科研等经验，由学生贡献和维护。",
+    "needLogin": false,
+    "keywords": ["百科","攻略","经验","校园文化","黑话","妮可","科大梗","校史"],
+    "routeRules": [
+      {"when": "用户问科大特色文化/黑话(妮可/卷等)", "action": "引导到校园百科了解"},
+      {"when": "用户想了解科大生活攻略", "action": "引导到校园百科查看学生整理的各类指南"}
+    ],
+    "tips": "学生维护，视角贴近学生。适合新生了解科大文化和各种'黑话'。"
+  },
+  {
+    "id": "ustc_main",
+    "name": "科大官网",
+    "url": "https://www.ustc.edu.cn/",
+    "category": "官方信息",
+    "description": "中国科学技术大学官方网站。学校概况、新闻动态、学术科研、招生就业等权威信息发布。",
+    "needLogin": false,
+    "keywords": ["科大","官网","学校官网","校史","新闻","公告"],
+    "routeRules": [
+      {"when": "用户想了解科大基本信息/官方新闻", "action": "引导到 ustc.edu.cn 科大学官网"}
+    ],
+    "tips": "权威信息源。查看学校概况、院系设置、科研成果、校史沿革等。"
+  },
+  {
+    "id": "lswhw",
+    "name": "科大历史文化",
+    "url": "http://lswhw.ustc.edu.cn/",
+    "category": "官方信息",
+    "description": "科大历史文化专题网站，记录科大发展历程和校园文化传承。",
+    "needLogin": false,
+    "keywords": ["校史","历史","文化","传统","郭永怀","两弹一星"],
+    "routeRules": [
+      {"when": "用户问科大历史/文化传统", "action": "引导到 lswhw.ustc.edu.cn 了解"}
+    ],
+    "tips": "了解科大的'两弹一星'背景、南迁合肥历史、校训精神等。"
+  }
+]
