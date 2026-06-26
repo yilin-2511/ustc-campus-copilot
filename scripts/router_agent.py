@@ -57,7 +57,7 @@ def _get_llm():
     # 2. 如果还没有，交互式输入
     if not key:
         print()
-        print("[API Key] No API Key found. Get one at https://api.llm.ustc.edu.cn")
+        print("[API Key] No API Key found. Get one at https://llm.ustc.edu.cn/llmService")
         try:
             key = input("[API Key] Paste your key: ").strip()
         except EOFError:

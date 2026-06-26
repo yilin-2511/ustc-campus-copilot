@@ -51,7 +51,7 @@ python scripts/setup.py
 
 **首次运行时会自动提示输入 API Key**，输入一次后自动保存，无需手动编辑文件。
 
-> API Key 申请地址：https://api.llm.ustc.edu.cn（校内访问）
+> API Key 申请地址：https://llm.ustc.edu.cn/llmService（校内访问）
 
 ### 运行 Router Agent
 
