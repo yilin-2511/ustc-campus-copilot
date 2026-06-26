@@ -28,6 +28,15 @@ from conversation_memory import ConversationMemory
 # ============================================================
 # 配置
 # ============================================================
+# 1. 加载 .env 文件（必须在读取 os.environ 之前）
+_env_file = Path(__file__).resolve().parent.parent / ".env"
+try:
+    from dotenv import load_dotenv
+    if _env_file.exists():
+        load_dotenv(_env_file)
+except ImportError:
+    pass
+
 MODEL = os.environ.get("ROUTER_MODEL", "deepseek-v4-pro")
 MAX_TOOL_ROUNDS = 3
 TEMPERATURE = 0.3
@@ -36,25 +45,15 @@ _llm = None  # 延迟初始化
 
 
 def _get_llm():
-    """延迟加载 LLM 客户端（首次调用时加载 API Key）"""
+    """延迟加载 LLM 客户端（首次调用时交互式输入 API Key）"""
     global _llm
     if _llm is not None:
         return _llm
 
-    env_file = Path(__file__).resolve().parent.parent / ".env"
-
-    # 1. 尝试从 .env 加载
-    try:
-        from dotenv import load_dotenv
-        if env_file.exists():
-            load_dotenv(env_file)
-    except ImportError:
-        pass
-
     key = os.environ.get("DEEPSEEK_API_KEY", "")
     base = os.environ.get("DEEPSEEK_API_BASE", "https://api.llm.ustc.edu.cn/v1")
 
-    # 2. 如果还没有，交互式输入
+    # 如果还没有 Key，交互式输入
     if not key:
         print()
         print("[API Key] No API Key found. Get one at https://llm.ustc.edu.cn/llmService")
@@ -69,12 +68,12 @@ def _get_llm():
                 "  # then edit .env with your key"
             )
 
-        # 3. 自动保存
-        env_file.write_text(
-            "DEEPSEEK_API_KEY={}\nDEEPSEEK_API_BASE={}\n".format(key, base),
+        # 自动保存到 .env
+        _env_file.write_text(
+            "DEEPSEEK_API_KEY={}\nDEEPSEEK_API_BASE={}\nROUTER_MODEL={}\n".format(key, base, MODEL),
             encoding="utf-8"
         )
-        print("[API Key] Saved to {}, won't ask again.\n".format(env_file))
+        print("[API Key] Saved to {}, won't ask again.\n".format(_env_file))
 
     os.environ["DEEPSEEK_API_KEY"] = key
     os.environ["DEEPSEEK_API_BASE"] = base
