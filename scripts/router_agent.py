@@ -28,8 +28,19 @@ from conversation_memory import ConversationMemory
 # ============================================================
 # 配置
 # ============================================================
-def _load_api_key() -> str:
-    """加载 API Key，优先级：环境变量 > .env 文件 > 交互式输入"""
+MODEL = os.environ.get("ROUTER_MODEL", "deepseek-v4-pro")
+MAX_TOOL_ROUNDS = 3
+TEMPERATURE = 0.3
+
+_llm = None  # 延迟初始化
+
+
+def _get_llm():
+    """延迟加载 LLM 客户端（首次调用时加载 API Key）"""
+    global _llm
+    if _llm is not None:
+        return _llm
+
     env_file = Path(__file__).resolve().parent.parent / ".env"
 
     # 1. 尝试从 .env 加载
@@ -41,30 +52,35 @@ def _load_api_key() -> str:
         pass
 
     key = os.environ.get("DEEPSEEK_API_KEY", "")
-    if key:
-        return key
-
-    # 2. 交互式输入（首次使用）
-    print("\n🔑 未找到 API Key。请在 https://api.llm.ustc.edu.cn 申请（校内访问），然后粘贴到这里。")
-    key = input("   API Key: ").strip()
-    if not key:
-        raise RuntimeError("未提供 API Key，程序退出。")
-
-    # 3. 自动保存到 .env
     base = os.environ.get("DEEPSEEK_API_BASE", "https://api.llm.ustc.edu.cn/v1")
-    env_file.write_text(
-        f"DEEPSEEK_API_KEY={key}\n"
-        f"DEEPSEEK_API_BASE={base}\n",
-        encoding="utf-8"
-    )
-    print(f"   ✅ 已保存到 {env_file}，下次无需再输。\n")
-    return key
 
-API_KEY = _load_api_key()
-API_BASE = os.environ.get("DEEPSEEK_API_BASE", "https://api.llm.ustc.edu.cn/v1")
-MODEL = os.environ.get("ROUTER_MODEL", "deepseek-v4-pro")
-MAX_TOOL_ROUNDS = 3  # 单轮最多工具调用次数
-TEMPERATURE = 0.3
+    # 2. 如果还没有，交互式输入
+    if not key:
+        print()
+        print("[API Key] No API Key found. Get one at https://api.llm.ustc.edu.cn")
+        try:
+            key = input("[API Key] Paste your key: ").strip()
+        except EOFError:
+            key = ""
+        if not key:
+            raise RuntimeError(
+                "API Key is required. Set DEEPSEEK_API_KEY env variable or create .env file.\n"
+                "  cp .env.example .env\n"
+                "  # then edit .env with your key"
+            )
+
+        # 3. 自动保存
+        env_file.write_text(
+            "DEEPSEEK_API_KEY={}\nDEEPSEEK_API_BASE={}\n".format(key, base),
+            encoding="utf-8"
+        )
+        print("[API Key] Saved to {}, won't ask again.\n".format(env_file))
+
+    os.environ["DEEPSEEK_API_KEY"] = key
+    os.environ["DEEPSEEK_API_BASE"] = base
+
+    _llm = OpenAI(api_key=key, base_url=base)
+    return _llm
 
 # ============================================================
 # System Prompt
@@ -273,8 +289,6 @@ TOOL_HANDLERS = {
 # ============================================================
 # LLM 客户端
 # ============================================================
-llm = OpenAI(api_key=API_KEY, base_url=API_BASE)
-
 # ============================================================
 # 对话循环
 # ============================================================
@@ -304,7 +318,7 @@ def chat(
 
     while tool_round < MAX_TOOL_ROUNDS:
         try:
-            response = llm.chat.completions.create(
+            response = _get_llm().chat.completions.create(
                 model=MODEL,
                 messages=messages,
                 tools=TOOL_SCHEMAS,
@@ -359,7 +373,7 @@ def chat(
             "content": "请根据以上工具返回的信息，用中文给出最终回答。",
         })
         try:
-            final_resp = llm.chat.completions.create(
+            final_resp = _get_llm().chat.completions.create(
                 model=MODEL,
                 messages=messages,
                 temperature=TEMPERATURE,
