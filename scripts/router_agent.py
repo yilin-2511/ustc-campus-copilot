@@ -45,38 +45,53 @@ _llm = None  # 延迟初始化
 
 
 def _get_llm():
-    """延迟加载 LLM 客户端（首次调用时交互式输入 API Key）"""
+    """延迟加载 LLM 客户端（首次调用时交互式配置）"""
     global _llm
     if _llm is not None:
         return _llm
 
     key = os.environ.get("DEEPSEEK_API_KEY", "")
     base = os.environ.get("DEEPSEEK_API_BASE", "https://api.llm.ustc.edu.cn/v1")
+    model = os.environ.get("ROUTER_MODEL", "deepseek-v4-pro")
 
-    # 如果还没有 Key，交互式输入
+    # 如果还没有 Key，交互式配置（三项都可以改）
     if not key:
         print()
-        print("[API Key] No API Key found. Get one at https://llm.ustc.edu.cn/llmService")
+        print("=" * 55)
+        print("  首次配置 — 直接回车使用默认值")
+        print("  API 申请: https://llm.ustc.edu.cn/llmService")
+        print("=" * 55)
         try:
-            key = input("[API Key] Paste your key: ").strip()
+            key = input("  API Key: ").strip()
         except EOFError:
             key = ""
         if not key:
-            raise RuntimeError(
-                "API Key is required. Set DEEPSEEK_API_KEY env variable or create .env file.\n"
-                "  cp .env.example .env\n"
-                "  # then edit .env with your key"
-            )
+            raise RuntimeError("API Key is required.")
 
-        # 自动保存到 .env
+        try:
+            b = input("  API Base [{}]: ".format(base)).strip()
+            if b:
+                base = b
+        except EOFError:
+            pass
+
+        try:
+            m = input("  Model [{}]: ".format(model)).strip()
+            if m:
+                model = m
+        except EOFError:
+            pass
+
+        # 保存到 .env
         _env_file.write_text(
-            "DEEPSEEK_API_KEY={}\nDEEPSEEK_API_BASE={}\nROUTER_MODEL={}\n".format(key, base, MODEL),
+            "DEEPSEEK_API_KEY={}\nDEEPSEEK_API_BASE={}\nROUTER_MODEL={}\n".format(key, base, model),
             encoding="utf-8"
         )
-        print("[API Key] Saved to {}, won't ask again.\n".format(_env_file))
+        print("  Saved to {}\n".format(_env_file))
 
     os.environ["DEEPSEEK_API_KEY"] = key
     os.environ["DEEPSEEK_API_BASE"] = base
+    os.environ["ROUTER_MODEL"] = model
 
     _llm = OpenAI(api_key=key, base_url=base)
     return _llm

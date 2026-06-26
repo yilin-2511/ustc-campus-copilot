@@ -36,8 +36,7 @@
 
 ### 环境要求
 
-- Python 3.10+
-- Git
+- Python 3.10+（推荐用 venv 或 conda 创建虚拟环境，非必须）
 
 ```bash
 git clone https://github.com/yilin-2511/ustc-campus-copilot.git
