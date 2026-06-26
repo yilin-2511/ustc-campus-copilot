@@ -38,21 +38,17 @@
 
 - Python 3.10+（推荐用 venv 或 conda 创建虚拟环境，非必须）
 
+### 1. 克隆并安装
+
 ```bash
 git clone https://github.com/yilin-2511/ustc-campus-copilot.git
 cd ustc-campus-copilot
 python scripts/setup.py
 ```
 
-`setup.py` 自动完成依赖安装 → 模型下载 → 向量库构建。如果某步失败，单独重试那一步即可。
+`setup.py` 自动完成：安装依赖 → 下载 m3e-base 模型 → 构建 ChromaDB 向量库。
 
-### 配置 API Key
-
-**首次运行时会自动提示输入 API Key**，输入一次后自动保存，无需手动编辑文件。
-
-> API Key 申请地址：https://llm.ustc.edu.cn/llmService（校内访问）
-
-### 运行 Router Agent
+### 2. 启动 Agent
 
 ```powershell
 # Windows PowerShell
@@ -65,13 +61,36 @@ python scripts/router_agent.py
 PYTHONIOENCODING=utf-8 python scripts/router_agent.py
 ```
 
-### 测试 RAG 检索（无需 LLM）
+### 3. 首次配置
 
-```bash
-PYTHONIOENCODING=utf-8 python scripts/build_knowledge_base.py --query "保研需要什么条件"
+首次运行会提示配置 API Key，三个选项都可以自定义，直接回车使用默认值：
+
+```
+=======================================================
+  首次配置 — 直接回车使用默认值
+  API 申请: https://llm.ustc.edu.cn/llmService
+=======================================================
+  API Key: sk-xxxxxxxxxxxxx              ← 粘贴你的 Key（必填）
+  API Base [https://api.llm.ustc.edu.cn/v1]:  ← 回车用科大网关
+  Model [deepseek-v4-pro]:                ← 回车用默认模型
+  Saved to .env
 ```
 
-### 交互命令
+> API Key 在 https://llm.ustc.edu.cn/llmService 申请（校内访问）。  
+> 配置自动保存到 `.env`，下次运行无需再输。
+
+### 4. 可用模型
+
+| 模型 | 特点 |
+|------|------|
+| `deepseek-v4-pro` | 默认，最稳定 |
+| `deepseek-v4-flash-ascend` | 速度快 |
+| `qwen3.6-chat` | 轻量 |
+| `glm-5.2` | 智谱 |
+| `qwen-reasoner` | 推理强 |
+| `smart/reasoning` | 智能推理 |
+
+### 5. 交互命令
 
 | 输入 | 功能 |
 |------|------|
@@ -79,6 +98,39 @@ PYTHONIOENCODING=utf-8 python scripts/build_knowledge_base.py --query "保研需
 | `q` / `exit` | 退出 |
 | `/clear` | 清空对话历史 |
 | `/history` | 查看对话历史 |
+
+### 修改配置
+
+编辑项目根目录的 `.env` 文件：
+
+```env
+DEEPSEEK_API_KEY=sk-你的key
+DEEPSEEK_API_BASE=https://api.llm.ustc.edu.cn/v1
+ROUTER_MODEL=deepseek-v4-flash-ascend
+```
+
+也支持任何 OpenAI 兼容的 API（如 DeepSeek 官方、OpenAI）：
+
+```env
+DEEPSEEK_API_KEY=sk-xxx
+DEEPSEEK_API_BASE=https://api.openai.com/v1
+ROUTER_MODEL=gpt-4o
+```
+
+### 测试 RAG 检索（无需 LLM）
+
+```bash
+PYTHONIOENCODING=utf-8 python scripts/build_knowledge_base.py --query "保研需要什么条件"
+```
+
+### 常见问题
+
+| 问题 | 解决 |
+|------|------|
+| `403 model access denied` | 模型名写错了，检查 `ROUTER_MODEL` 拼写 |
+| `Loading weights` 出现 | 仅在进程启动后首次 RAG 查询时加载一次，之后复用 |
+| `ModuleNotFoundError` | 重新运行 `python scripts/setup.py` 安装依赖 |
+| API 超时 | 确认在科大校园网内访问 |
 
 ---
 
