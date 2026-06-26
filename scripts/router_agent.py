@@ -28,24 +28,40 @@ from conversation_memory import ConversationMemory
 # ============================================================
 # 配置
 # ============================================================
-# 尝试从 .env 文件加载（如果存在）
-try:
-    from dotenv import load_dotenv
-    _env_file = Path(__file__).resolve().parent.parent / ".env"
-    if _env_file.exists():
-        load_dotenv(_env_file)
-except ImportError:
-    pass  # python-dotenv 可选
+def _load_api_key() -> str:
+    """加载 API Key，优先级：环境变量 > .env 文件 > 交互式输入"""
+    env_file = Path(__file__).resolve().parent.parent / ".env"
 
-API_KEY = os.environ.get("DEEPSEEK_API_KEY", "")
-API_BASE = os.environ.get("DEEPSEEK_API_BASE", "https://api.llm.ustc.edu.cn/v1")
-if not API_KEY:
-    raise RuntimeError(
-        "请设置 DEEPSEEK_API_KEY 环境变量。\n"
-        "  方法1: 在项目根目录创建 .env 文件（参考 .env.example）\n"
-        "  方法2: 在终端设置环境变量\n"
-        "  API Key 可在 https://api.llm.ustc.edu.cn 申请"
+    # 1. 尝试从 .env 加载
+    try:
+        from dotenv import load_dotenv
+        if env_file.exists():
+            load_dotenv(env_file)
+    except ImportError:
+        pass
+
+    key = os.environ.get("DEEPSEEK_API_KEY", "")
+    if key:
+        return key
+
+    # 2. 交互式输入（首次使用）
+    print("\n🔑 未找到 API Key。请在 https://api.llm.ustc.edu.cn 申请（校内访问），然后粘贴到这里。")
+    key = input("   API Key: ").strip()
+    if not key:
+        raise RuntimeError("未提供 API Key，程序退出。")
+
+    # 3. 自动保存到 .env
+    base = os.environ.get("DEEPSEEK_API_BASE", "https://api.llm.ustc.edu.cn/v1")
+    env_file.write_text(
+        f"DEEPSEEK_API_KEY={key}\n"
+        f"DEEPSEEK_API_BASE={base}\n",
+        encoding="utf-8"
     )
+    print(f"   ✅ 已保存到 {env_file}，下次无需再输。\n")
+    return key
+
+API_KEY = _load_api_key()
+API_BASE = os.environ.get("DEEPSEEK_API_BASE", "https://api.llm.ustc.edu.cn/v1")
 MODEL = os.environ.get("ROUTER_MODEL", "deepseek-v4-pro")
 MAX_TOOL_ROUNDS = 3  # 单轮最多工具调用次数
 TEMPERATURE = 0.3

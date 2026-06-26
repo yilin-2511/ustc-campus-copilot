@@ -68,15 +68,7 @@ PYTHONIOENCODING=utf-8 python scripts/build_knowledge_base.py --rebuild
 
 ### 配置 API Key
 
-每位用户需要申请自己的 LLM API Key（USTC 校内网关）。
-
-```bash
-# 1. 复制环境变量模板
-cp .env.example .env
-
-# 2. 编辑 .env，填入你的 API Key
-# DEEPSEEK_API_KEY=你的key
-```
+**首次运行时会自动提示输入 API Key**，输入一次后自动保存，无需手动编辑文件。
 
 > API Key 申请地址：https://api.llm.ustc.edu.cn（校内访问）
 
