@@ -144,9 +144,9 @@ PYTHONIOENCODING=utf-8 python scripts/build_knowledge_base.py --query "保研需
 │     router_agent.py              │
 │  Function-Calling Router         │
 │                                  │
-│  工具1: search_forum_knowledge   │──→ rag_tools.py ──→ ChromaDB (1,215条)
-│  工具2: navigate_to_platform     │──→ platform_tools.py ──→ platform_routing.json (44平台)
-│  工具3: search_course_info       │──→ catalog.ustc.edu.cn (开发中)
+│  工具1: search_forum_knowledge   │──→ rag_tools.py ──→ ChromaDB campus_knowledge (1,215条)
+│  工具2: navigate_to_platform     │──→ platform_tools.py ──→ ChromaDB campus_platforms (170条)
+│  工具3: search_course_info       │──→ course_tools.py ──→ catalog.ustc.edu.cn API
 │                                  │
 │  多轮记忆: conversation_memory.py │
 └──────────────────────────────────┘
@@ -159,8 +159,10 @@ PYTHONIOENCODING=utf-8 python scripts/build_knowledge_base.py --query "保研需
 
 | 用户意图 | 路由目标 | 示例 |
 |---------|---------|------|
-| 经验/评价类 | RAG 知识库 | "保研失败了怎么办"、"数分哪个老师好" |
-| 办事/查询类 | 平台导航 | "怎么查成绩"、"教室设备坏了去哪里报修" |
+| 经验/评价类 | 论坛 RAG | "保研失败了怎么办"、"数分哪个老师好" |
+| 办事/查询类 | 平台导航 + 指南 | "怎么查成绩"、"教室设备坏了去哪里报修" |
+| 社团/兴趣类 | QQ 群推荐 | "怎么找到动漫同好"、"有没有篮球群" |
+| 课程查询类 | 教务 API | "数值分析谁教的"、"下学期有哪些数学课" |
 | 常识类 | 直接回答 | "图书馆几点关门" |
 | 非校园类 | 礼貌拒答 | "今天天气怎么样" |
 
@@ -183,6 +185,8 @@ ustc-campus-copilot/
 │   └── _archived/                # 已归档的旧脚本
 ├── data/
 │   ├── platform_routing.json     # 44 个校园平台路由数据
+│   ├── qq_groups.json            # 90 个科大 QQ 群
+│   ├── campus_landmarks.json     # 校园地标（小组手动整理中）
 │   ├── ustc_campus_platforms.txt # 校园平台目录（可读文本）
 │   └── raw/n7teahouse/
 │       └── n7_qa_knowledge.json  # 1,215 条 Q&A 知识条目
@@ -202,9 +206,15 @@ ustc-campus-copilot/
 - 最终产出 1,215 条 Q&A（97% 产出率）
 - 嵌入：m3e-base（768 维），语义去重阈值 0.88
 
-### 校园平台路由（44 个平台）
+### 平台路由 + 指南 + QQ 群（170 条）
 
-覆盖教务、课程、图书馆、生活、技术、医疗、升学等 14 个分类。详见 [ustc_campus_platforms.txt](data/ustc_campus_platforms.txt)
+数据来源：
+- 44 个官方/半官方校园平台（platform_routing.json）
+- 29 个 USTC 不完全入学指南章节（erictianc.github.io）
+- 5 个 USTC 新手村攻略章节（gitee.com/yssickjgd）
+- 90 个 QQ 群（qq_groups.json，南七茶馆论坛提取）
+
+QQ 群链接使用 `tencent://` 协议，点击可直接唤起 QQ 加群。详见 [qq_groups.json](data/qq_groups.json)
 
 ---
 
