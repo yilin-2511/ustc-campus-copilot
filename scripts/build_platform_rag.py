@@ -10,6 +10,9 @@
 用法: python scripts/build_platform_rag.py
 """
 from __future__ import annotations
+import os as _os
+_os.environ.setdefault("TQDM_DISABLE", "1")
+
 import json
 import re
 import ssl
@@ -127,9 +130,9 @@ def main():
         for g in qq_groups:
             entries.append({
                 "text": "QQ群: " + g["name"] + ". 群号: " + g["number"]
-                        + ". 分类: " + g.get("category", ""),
+                        + "（在QQ中搜索群号即可加入）. 分类: " + g.get("category", ""),
                 "name": g["name"],
-                "url": "https://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=" + g["number"],
+                "url": "tencent://groupwpa/?subcmd=all&param=groupUin%3D" + g["number"],
                 "type": "qq_group",
                 "source": "QQ群",
             })
