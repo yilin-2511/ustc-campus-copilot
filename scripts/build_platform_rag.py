@@ -138,6 +138,25 @@ def main():
             })
         print(f"  QQ groups: {len(qq_groups)}")
 
+    # 5. 校园地标（手动整理，防止 LLM 幻觉）
+    landmarks_file = ROOT / "data" / "campus_landmarks.json"
+    if landmarks_file.exists():
+        with open(landmarks_file, "r", encoding="utf-8") as f:
+            landmarks = json.load(f)
+        for lm in landmarks:
+            if not lm.get("name"):
+                continue
+            entries.append({
+                "text": "校园地标: " + lm["name"] + "。位置: " + lm["location"]
+                        + "。类别: " + lm.get("category", "") + "。"
+                        + lm.get("note", ""),
+                "name": lm["name"],
+                "url": "",
+                "type": "landmark",
+                "source": "校园地标（手动整理）",
+            })
+        print(f"  Landmarks: {len([lm for lm in landmarks if lm.get('name')])}")
+
     print(f"\n  Total entries: {len(entries)}")
 
     # Build ChromaDB
