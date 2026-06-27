@@ -313,6 +313,8 @@ def chat(
     user_input: str,
     memory: ConversationMemory,
     stream: bool = False,
+    on_tool_start=None,  # callable(name, args) or None
+    on_tool_end=None,    # callable(name, result) or None
 ) -> str:
     """
     处理单轮用户输入，返回 Agent 回复。
@@ -323,6 +325,8 @@ def chat(
     3. 执行 tool_calls → 结果追加到 messages
     4. 回到 LLM → 重复（最多 MAX_TOOL_ROUNDS 轮）
     5. 生成最终回答
+
+    可选回调 on_tool_start / on_tool_end 用于 Web UI 显示工具调用过程。
     """
     # 1. 构建消息列表
     messages = [{"role": "system", "content": SYSTEM_PROMPT}]
@@ -360,15 +364,29 @@ def chat(
                 except json.JSONDecodeError:
                     func_args = {}
 
+                # 通知 Web UI 工具调用开始
+                if on_tool_start:
+                    try:
+                        on_tool_start(func_name, func_args)
+                    except Exception:
+                        pass
+
                 # 执行工具
                 handler = TOOL_HANDLERS.get(func_name)
                 if handler:
                     try:
                         result = handler(**func_args)
                     except Exception as e:
-                        result = f"[工具执行错误] {func_name}: {e}"
+                        result = "[工具执行错误] {}: {}".format(func_name, e)
                 else:
-                    result = f"[未知工具] {func_name}"
+                    result = "[未知工具] {}".format(func_name)
+
+                # 通知 Web UI 工具调用结束
+                if on_tool_end:
+                    try:
+                        on_tool_end(func_name, result)
+                    except Exception:
+                        pass
 
                 # 追加 tool 结果消息
                 messages.append({
