@@ -22,26 +22,31 @@ TOP_K = 5
 SIMILARITY_CUTOFF = 0.5
 
 # 模块级单例 —— embedding function 只创建一次
+import threading as _threading
+_lock = _threading.Lock()
 _client = None
 _collection = None
 
 
 def _get_collection():
-    """延迟初始化 ChromaDB 连接（模型只加载一次）"""
+    """延迟初始化 ChromaDB 连接（模型只加载一次，线程安全）"""
     global _client, _collection
     if _collection is None:
-        import sys
-        import chromadb
-        from chromadb.utils.embedding_functions import (
-            SentenceTransformerEmbeddingFunction,
-        )
-        print("[RAG] Loading embedding model (m3e-base, first time only)...", flush=True)
-        ef = SentenceTransformerEmbeddingFunction(model_name=EMBED_MODEL)
-        _client = chromadb.PersistentClient(path=CHROMA_DIR)
-        _collection = _client.get_collection(
-            COLLECTION_NAME, embedding_function=ef
-        )
-        print("[RAG] Model loaded, ready.", flush=True)
+        with _lock:
+            if _collection is not None:
+                return _collection
+            import sys
+            import chromadb
+            from chromadb.utils.embedding_functions import (
+                SentenceTransformerEmbeddingFunction,
+            )
+            print("[RAG] Loading embedding model (m3e-base, first time only)...", flush=True)
+            ef = SentenceTransformerEmbeddingFunction(model_name=EMBED_MODEL)
+            _client = chromadb.PersistentClient(path=CHROMA_DIR)
+            _collection = _client.get_collection(
+                COLLECTION_NAME, embedding_function=ef
+            )
+            print("[RAG] Model loaded, ready.", flush=True)
     return _collection
 
 

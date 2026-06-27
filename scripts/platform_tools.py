@@ -18,7 +18,9 @@ _MODEL_DIR = ROOT_DIR / "models" / "xrunda" / "m3e-base"
 EMBED_MODEL = str(_MODEL_DIR) if _MODEL_DIR.exists() else "xrunda/m3e-base"
 COLLECTION_NAME = "campus_platforms"
 
-# 模块级单例
+# 模块级单例（线程安全）
+import threading as _threading
+_lock = _threading.Lock()
 _collection = None
 
 
@@ -26,13 +28,16 @@ def _get_collection():
     """延迟初始化 ChromaDB 连接"""
     global _collection
     if _collection is None:
-        import chromadb
-        from chromadb.utils.embedding_functions import (
-            SentenceTransformerEmbeddingFunction,
-        )
-        ef = SentenceTransformerEmbeddingFunction(model_name=EMBED_MODEL)
-        client = chromadb.PersistentClient(path=CHROMA_DIR)
-        _collection = client.get_collection(COLLECTION_NAME, embedding_function=ef)
+        with _lock:
+            if _collection is not None:
+                return _collection
+            import chromadb
+            from chromadb.utils.embedding_functions import (
+                SentenceTransformerEmbeddingFunction,
+            )
+            ef = SentenceTransformerEmbeddingFunction(model_name=EMBED_MODEL)
+            client = chromadb.PersistentClient(path=CHROMA_DIR)
+            _collection = client.get_collection(COLLECTION_NAME, embedding_function=ef)
     return _collection
 
 
