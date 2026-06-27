@@ -42,6 +42,8 @@ def _get_collection():
             )
             print("[RAG] Loading embedding model (m3e-base, first time only)...", flush=True)
             ef = SentenceTransformerEmbeddingFunction(model_name=EMBED_MODEL)
+            if hasattr(ef, '_model') and ef._model is not None:
+                ef._model.show_progress_bar = False
             _client = chromadb.PersistentClient(path=CHROMA_DIR)
             _collection = _client.get_collection(
                 COLLECTION_NAME, embedding_function=ef

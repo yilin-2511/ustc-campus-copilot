@@ -36,6 +36,8 @@ def _get_collection():
                 SentenceTransformerEmbeddingFunction,
             )
             ef = SentenceTransformerEmbeddingFunction(model_name=EMBED_MODEL)
+            if hasattr(ef, '_model') and ef._model is not None:
+                ef._model.show_progress_bar = False
             client = chromadb.PersistentClient(path=CHROMA_DIR)
             _collection = client.get_collection(COLLECTION_NAME, embedding_function=ef)
     return _collection

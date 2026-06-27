@@ -150,6 +150,8 @@ def main():
     _model_dir = ROOT / "models" / "xrunda" / "m3e-base"
     embed_model = str(_model_dir) if _model_dir.exists() else "xrunda/m3e-base"
     ef = SentenceTransformerEmbeddingFunction(model_name=embed_model)
+    if hasattr(ef, '_model') and ef._model is not None:
+        ef._model.show_progress_bar = False
     client = chromadb.PersistentClient(path=str(ROOT / "chroma_db"))
 
     try:
