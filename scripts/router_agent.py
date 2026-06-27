@@ -23,6 +23,7 @@ sys.path.insert(0, "scripts")
 from openai import OpenAI
 from rag_tools import query_forum_knowledge
 from platform_tools import navigate_to_platform
+from course_tools import search_course_info
 from conversation_memory import ConversationMemory
 
 # ============================================================
@@ -239,8 +240,11 @@ TOOL_SCHEMAS = [
         "function": {
             "name": "search_course_info",
             "description": (
-                "查询教务系统公共数据（课程安排、考试安排、教室使用情况）。"
-                "注意：此功能仍在开发中，目前返回教务系统链接供用户自行查询。"
+                "查询科大教务系统公开数据。支持三种查询："
+                "course_schedule=课程搜索(学分/考核/上课时间地点/教师)、"
+                "exam_schedule=考试安排查询链接、"
+                "classroom_availability=空闲教室查询链接。"
+                "数据来自 catalog.ustc.edu.cn，完全公开无需登录。"
             ),
             "parameters": {
                 "type": "object",
@@ -282,19 +286,8 @@ def handle_navigate_platform(question: str) -> str:
 
 
 def handle_search_course(keyword: str, query_type: str) -> str:
-    """处理 search_course_info 工具调用（占位）"""
-    type_names = {
-        "course_schedule": "全校开课查询",
-        "exam_schedule": "考试查询",
-        "classroom_availability": "教室使用情况查询",
-    }
-    type_name = type_names.get(query_type, query_type)
-    return (
-        f"该功能正在接入教务系统数据中，暂时无法自动查询。\n"
-        f"你可以自行访问教务系统公共查询：https://catalog.ustc.edu.cn/query/\n"
-        f"选择「{type_name}」，输入关键词「{keyword}」即可查询。\n"
-        f"无需登录，完全公开。"
-    )
+    """处理 search_course_info 工具调用（调用 catalog API）"""
+    return search_course_info(keyword, query_type)
 
 
 TOOL_HANDLERS = {
