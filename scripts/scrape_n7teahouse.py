@@ -64,7 +64,7 @@ MIN_LIKES_FOR_VALUE = 1      # 单条回复至少 1 赞就算"有用"
 MAX_REPLIES_PER_POST = 6     # 每条帖子最多保留的回复数（取 top-N）
 
 # ---- LLM 合成 ----
-SYNTHESIS_MODEL = os.getenv("SYNTHESIS_MODEL", "qwen3.5")
+SYNTHESIS_MODEL = os.getenv("SYNTHESIS_MODEL", "qwen3.6-chat")
 MAX_SYNTHESIS_CHARS = 8000   # 单次合成最大输入字符数
 SYNTHESIS_WORKERS = 4         # LLM 合成并发数
 

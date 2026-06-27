@@ -4,6 +4,6 @@ sentence-transformers>=5.6.0
 httpx>=0.28.1
 beautifulsoup4>=4.15.0
 numpy>=2.4.6
-repair_json>=0.1.0
+json-repair>=0.1.0
 python-dotenv>=1.0.0
 modelscope>=1.0.0

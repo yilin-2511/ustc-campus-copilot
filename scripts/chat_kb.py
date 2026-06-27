@@ -21,6 +21,7 @@ collection = client.get_collection("campus_knowledge", embedding_function=embedd
 # LLM query 重写（从环境变量读取 API Key）
 DEEPSEEK_API_KEY = os.environ.get("DEEPSEEK_API_KEY", "")
 DEEPSEEK_API_BASE = os.environ.get("DEEPSEEK_API_BASE", "https://api.llm.ustc.edu.cn/v1")
+REWRITE_MODEL = os.environ.get("ROUTER_MODEL", "deepseek-v4-pro")
 from openai import OpenAI
 llm = OpenAI(api_key=DEEPSEEK_API_KEY, base_url=DEEPSEEK_API_BASE)
 
@@ -28,7 +29,7 @@ def rewrite_query(query):
     """用 LLM 扩展查询词，消歧短词和黑话"""
     try:
         r = llm.chat.completions.create(
-            model="qwen3.5",
+            model=REWRITE_MODEL,
             messages=[{"role": "system", "content": f"你是中科大校园知识库的查询助手。知识库包含{collection.count()}条问答，来自科大论坛\"南七茶馆\"，涵盖：保研/升学、选课/课程、生活/校园、心理/成长、求职/实习、技术/教程、学分/政策等主题。用户会使用缩写（计科=计算机科学）、黑话（暑研=暑期科研实习、妮可=科大、卷=竞争激烈）、口语化表达。你的任务是把用户输入扩展成完整、具体的关键词检索查询，补充同义词和相关概念。必须比原文更长更详细。只输出扩展结果。"},
                       {"role": "user", "content": f"用户问: {query}\n扩展查询:"}],
             temperature=0, max_tokens=80)
