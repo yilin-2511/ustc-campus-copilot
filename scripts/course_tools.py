@@ -93,8 +93,7 @@ def search_course_info(keyword: str, query_type: str) -> str:
             ).format(keyword)
 
         # 取 top-5 课程，获取详情和开课信息
-        top5 = courses[:5]
-        codes = [c["number"] for c in top5]
+        codes = [c["number"] for c in courses]
 
         try:
             details = {c["code"]: c for c in get_course_detail(codes)} if codes else {}
@@ -102,7 +101,7 @@ def search_course_info(keyword: str, query_type: str) -> str:
             details = {}
 
         lines = ["找到 {} 门与「{}」相关的课程：\n".format(len(courses), keyword)]
-        for c in top5:
+        for c in courses:
             code = c["number"]
             name = c.get("name", "")
             dept = c.get("dept", "")
