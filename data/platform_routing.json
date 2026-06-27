@@ -1186,5 +1186,27 @@
       }
     ],
     "tips": "权威信息源。查看学校概况、院系设置、科研成果、校史沿革等。"
+  },
+  {
+    "id": "sf",
+    "name": "网上缴费",
+    "url": "https://cwjf.ustc.edu.cn/payment/",
+    "category": "校园服务",
+    "description": "科大学费、住宿费等网上缴费平台。",
+    "needLogin": true,
+    "keywords": [
+      "缴费",
+      "学费",
+      "住宿费",
+      "网上缴费",
+      "欠费"
+    ],
+    "routeRules": [
+      {
+        "when": "用户问怎么交学费/住宿费",
+        "action": "引导到 cwjf.ustc.edu.cn/payment 网上缴费"
+      }
+    ],
+    "tips": "需要CAS登录。每学期开学前完成缴费。"
   }
 ]
