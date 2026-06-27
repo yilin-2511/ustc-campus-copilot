@@ -96,18 +96,10 @@ def search_course_info(keyword: str, query_type: str) -> str:
         top5 = courses[:5]
         codes = [c["number"] for c in top5]
 
-        # 并行获取详情
         try:
             details = {c["code"]: c for c in get_course_detail(codes)} if codes else {}
         except Exception:
             details = {}
-
-        try:
-            semester = _get_latest_semester()
-            lessons = get_lesson_info(codes, semester)
-        except Exception:
-            lessons = []
-            semester = ""
 
         lines = ["找到 {} 门与「{}」相关的课程：\n".format(len(courses), keyword)]
         for c in top5:
@@ -125,24 +117,6 @@ def search_course_info(keyword: str, query_type: str) -> str:
             lines.append("  开课院系: {} | 最近开课: {}".format(dept, last))
             if grading:
                 lines.append("  评分制: {} | 考核: {}".format(grading, exam))
-
-            # 上课时间地点
-            course_lessons = [l for l in lessons if l.get("code") == code]
-            if course_lessons:
-                lines.append("  上课安排:")
-                for l in course_lessons[:3]:
-                    teachers = l.get("teachers", "")
-                    room = l.get("room", "")
-                    schedule = l.get("schedule", "")
-                    if isinstance(schedule, dict):
-                        schedule = " ".join(
-                            "{} {}".format(k, v) for k, v in schedule.items()
-                        )
-                    lines.append(
-                        "    教师: {} | 教室: {} | 时间: {}".format(
-                            teachers, room, str(schedule)[:80]
-                        )
-                    )
             lines.append("")
 
         lines.append(
