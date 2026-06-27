@@ -22,34 +22,18 @@ _client = None
 _collection = None
 
 
-class _QuietEmbeddingFunction:
-    """封装 SentenceTransformerEmbeddingFunction，关闭进度条"""
-
-    def __init__(self, model_name: str):
-        import chromadb.utils.embedding_functions as ef_module
-        self._inner = ef_module.SentenceTransformerEmbeddingFunction(
-            model_name=model_name
-        )
-        # 关闭编码时的进度条
-        if hasattr(self._inner, "_model") and self._inner._model is not None:
-            self._inner._model.show_progress_bar = False
-
-    def __call__(self, input):
-        return self._inner(input)
-
-    @staticmethod
-    def name():
-        return "sentence_transformer"
-
-
 def _get_collection():
-    """延迟初始化 ChromaDB 连接（模型只加载一次，无进度条）"""
+    """延迟初始化 ChromaDB 连接（模型只加载一次）"""
     global _client, _collection
     if _collection is None:
         import sys
         import chromadb
+        from chromadb.utils.embedding_functions import (
+            SentenceTransformerEmbeddingFunction,
+        )
         print("[RAG] Loading embedding model (m3e-base, first time only)...", flush=True)
-        ef = _QuietEmbeddingFunction(EMBED_MODEL)
+        ef = SentenceTransformerEmbeddingFunction(model_name=EMBED_MODEL)
+        ef._model.show_progress_bar = False  # 关闭编码进度条
         _client = chromadb.PersistentClient(path=CHROMA_DIR)
         _collection = _client.get_collection(
             COLLECTION_NAME, embedding_function=ef
