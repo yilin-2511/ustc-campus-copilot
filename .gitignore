@@ -38,3 +38,5 @@ _temp_*
 
 # Web UI（开发中，暂不提交）
 web/
+chainlit.md
+.chainlit/
