@@ -134,7 +134,7 @@
   {
     "id": "roombooking",
     "name": "学习空间预约",
-    "url": "https://lib.ustc.edu.cn/图书馆研修间预约系统/",
+    "url": "https://lib.ustc.edu.cn/%E5%9B%BE%E4%B9%A6%E9%A6%86%E7%A0%94%E4%BF%AE%E9%97%B4%E9%A2%84%E7%BA%A6%E7%B3%BB%E7%BB%9F/",
     "category": "学习资源",
     "description": "图书馆自习室、研修间在线预约系统。",
     "needLogin": true,
@@ -514,7 +514,7 @@
   {
     "id": "bbs",
     "name": "瀚海星云BBS",
-    "url": "https://bbs.ustc.edu.cn/",
+    "url": "http://bbs.ustc.edu.cn/",
     "category": "论坛社区",
     "description": "科大传统BBS（瀚海星云），历史悠久。信息可能较陈旧，但保留了大量历史经验帖。",
     "needLogin": false,
