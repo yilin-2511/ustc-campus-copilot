@@ -34,8 +34,8 @@ class _QuietEmbeddingFunction:
         if hasattr(self._inner, "_model") and self._inner._model is not None:
             self._inner._model.show_progress_bar = False
 
-    def __call__(self, texts):
-        return self._inner(texts)
+    def __call__(self, input):
+        return self._inner(input)
 
     @staticmethod
     def name():
