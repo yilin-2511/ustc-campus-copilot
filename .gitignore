@@ -35,3 +35,6 @@ data/raw/n7teahouse/_archived_*/
 *.tmp
 *.log
 _temp_*
+
+# Web UI（开发中，暂不提交）
+web/

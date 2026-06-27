@@ -1,119 +1,110 @@
 """
 校园平台路由工具 — 供 Router Agent 调用
 ========================================
-从 platform_routing.json 加载 44 个校园平台，
-根据用户问题关键词匹配推荐最合适的平台。
+基于 ChromaDB 语义搜索，从 170 条数据源中匹配最佳平台/指南/QQ群。
+数据源: 44 官方平台 + 29 入学指南章节 + 5 新手攻略 + 90 QQ群
+
 独立运行测试: python scripts/platform_tools.py "怎么查成绩"
 """
 from __future__ import annotations
-import json
 from pathlib import Path
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
-PLATFORM_FILE = ROOT_DIR / "data" / "platform_routing.json"
+CHROMA_DIR = str(ROOT_DIR / "chroma_db")
+_MODEL_DIR = ROOT_DIR / "models" / "xrunda" / "m3e-base"
+EMBED_MODEL = str(_MODEL_DIR) if _MODEL_DIR.exists() else "xrunda/m3e-base"
+COLLECTION_NAME = "campus_platforms"
 
-# 模块级缓存
-_platforms: list[dict] | None = None
-
-
-def load_platforms() -> list[dict]:
-    """加载全部平台数据，模块级缓存"""
-    global _platforms
-    if _platforms is not None:
-        return _platforms
-    with open(PLATFORM_FILE, "r", encoding="utf-8") as f:
-        _platforms = json.load(f)
-    return _platforms
+# 模块级单例
+_collection = None
 
 
-def match_platform(question: str) -> dict | None:
+def _get_collection():
+    """延迟初始化 ChromaDB 连接"""
+    global _collection
+    if _collection is None:
+        import chromadb
+        from chromadb.utils.embedding_functions import (
+            SentenceTransformerEmbeddingFunction,
+        )
+        ef = SentenceTransformerEmbeddingFunction(model_name=EMBED_MODEL)
+        client = chromadb.PersistentClient(path=CHROMA_DIR)
+        _collection = client.get_collection(COLLECTION_NAME, embedding_function=ef)
+    return _collection
+
+
+def navigate_to_platform(question: str, n_results: int = 3) -> str:
     """
-    根据用户问题匹配最相关的校园平台。
+    语义搜索最匹配的平台/指南/QQ群。
 
-    算法：关键词命中 + routeRules 文本重叠度双层打分。
-    返回得分最高的平台 dict，无匹配时返回 None。
+    Args:
+        question: 用户问题
+        n_results: 返回结果数
+
+    Returns:
+        格式化的推荐文本，包含名称、URL、类型和来源。
+        无匹配时返回 ustc.life 兜底建议。
     """
-    platforms = load_platforms()
-    question_lower = question.lower()
-
-    scored = []
-    for p in platforms:
-        score = 0.0
-
-        # 第一层：关键词命中（每个命中 +2 分）
-        for kw in p.get("keywords", []):
-            if kw.lower() in question_lower:
-                score += 2.0
-
-        # 第二层：routeRules 的 when 文本重叠度
-        for rule in p.get("routeRules", []):
-            when_text = rule.get("when", "")
-            # 提取 when 中的实义词
-            when_lower = (
-                when_text.replace("用户", "")
-                .replace("咨询", "")
-                .replace("问", "")
-                .replace("想", "")
-                .replace("需要", "")
-                .replace("是否", "")
-                .lower()
-            )
-            # 计算字符级重叠
-            overlap = sum(1 for c in when_lower if c in question_lower)
-            score += overlap * 0.02  # 小权重
-
-        if score > 0:
-            scored.append((score, p))
-
-    if not scored:
-        return None
-
-    scored.sort(key=lambda x: -x[0])
-
-    # 低于阈值视为不匹配
-    if scored[0][0] < 1.5:
-        return None
-
-    return scored[0][1]
-
-
-def format_platform_result(platform: dict | None, question: str = "") -> str:
-    """
-    将平台匹配结果格式化为 LLM 可读的文本。
-
-    如果 platform 为 None，返回 ustc.life 兜底建议。
-    """
-    if platform is None:
+    try:
+        collection = _get_collection()
+    except Exception as e:
         return (
-            "未找到与你的问题完全匹配的校园平台。\n"
-            "建议访问 USTC 导航 (https://ustc.life/)，它聚合了 60+ 个校园网站，"
-            "按学习/生活/技术分类，可以快速找到你需要的平台。\n"
-            "或者更具体地描述你的需求，比如 '怎么查成绩'、'哪里报修教室设备'。"
+            "平台路由服务暂不可用（{}）。\n"
+            "建议直接访问 USTC 导航 https://ustc.life/ 查找所需平台。".format(e)
         )
 
-    login_note = (
-        "需要 CAS 统一身份认证登录（学号+密码）。"
-        if platform.get("needLogin")
-        else "无需登录，直接访问。"
-    )
+    try:
+        results = collection.query(query_texts=[question], n_results=n_results)
+    except Exception as e:
+        return "平台查询失败: {}".format(e)
 
-    lines = [
-        f"推荐平台：{platform['name']}",
-        f"网址：{platform['url']}",
-        f"用途：{platform['description']}",
-        f"登录要求：{login_note}",
-        f"使用提示：{platform.get('tips', '')}",
-    ]
+    if not results["ids"] or not results["ids"][0]:
+        return (
+            "未找到与你问题匹配的校园平台或指南。\n"
+            "建议访问 USTC 导航 https://ustc.life/ 浏览全部校园平台。"
+        )
+
+    hits = []
+    for i in range(len(results["ids"][0])):
+        distance = results["distances"][0][i]
+        similarity = 1 - distance
+        if similarity < 0.4:  # 相似度太低的不展示
+            continue
+        meta = results["metadatas"][0][i]
+        doc = results["documents"][0][i]
+        hits.append({
+            "name": meta.get("name", ""),
+            "url": meta.get("url", ""),
+            "type": meta.get("type", ""),
+            "source": meta.get("source", ""),
+            "similarity": similarity,
+        })
+
+    if not hits:
+        return (
+            "未找到与你问题高度匹配的校园平台或指南。\n"
+            "建议访问 USTC 导航 https://ustc.life/ 浏览全部校园平台。"
+        )
+
+    # 格式化输出
+    type_labels = {
+        "platform": "官方平台",
+        "guide": "新生指南",
+        "qq_group": "QQ群",
+    }
+    lines = ["找到 {} 个相关结果:\n".format(len(hits))]
+    for i, h in enumerate(hits, 1):
+        label = type_labels.get(h["type"], h["type"])
+        bar = "🟢" if h["similarity"] > 0.65 else "🟡"
+        lines.append(
+            "[{}] {} {} | {} | 来源: {}".format(
+                i, bar, h["name"], label, h["source"]
+            )
+        )
+        lines.append("    URL: {}".format(h["url"]))
+        lines.append("")
+
     return "\n".join(lines)
-
-
-def navigate_to_platform(question: str) -> str:
-    """
-    Router Agent 的 navigate_to_platform 工具实现。
-    接收用户问题，返回格式化平台推荐文本。
-    """
-    platform = match_platform(question)
-    return format_platform_result(platform, question)
 
 
 # ============================================================
@@ -128,14 +119,14 @@ if __name__ == "__main__":
         else [
             "怎么查成绩",
             "教室设备坏了去哪里报修",
-            "想找空教室自习",
-            "怎么选课",
-            "保研失败了怎么办",  # 应该匹配不到（经验类问题）
+            "中区宿舍怎么样",
+            "保研失败了怎么办",
+            "期末复习有什么技巧",
         ]
     )
 
     for q in test_queries:
-        print(f"\n🔍 问题: {q}")
+        print("\n🔍 问题: {}".format(q))
         print("-" * 50)
         result = navigate_to_platform(q)
         print(result)
