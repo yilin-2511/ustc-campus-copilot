@@ -9,6 +9,9 @@
 from __future__ import annotations
 from pathlib import Path
 
+import os as _os
+_os.environ.setdefault("TQDM_DISABLE", "1")
+
 ROOT_DIR = Path(__file__).resolve().parent.parent
 CHROMA_DIR = str(ROOT_DIR / "chroma_db")
 _MODEL_DIR = ROOT_DIR / "models" / "xrunda" / "m3e-base"
@@ -28,7 +31,6 @@ def _get_collection():
             SentenceTransformerEmbeddingFunction,
         )
         ef = SentenceTransformerEmbeddingFunction(model_name=EMBED_MODEL)
-        ef._model.show_progress_bar = False  # 关闭编码进度条
         client = chromadb.PersistentClient(path=CHROMA_DIR)
         _collection = client.get_collection(COLLECTION_NAME, embedding_function=ef)
     return _collection

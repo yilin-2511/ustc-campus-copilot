@@ -9,6 +9,10 @@ SentenceTransformerEmbeddingFunction 内部有类级别模型缓存，
 from __future__ import annotations
 from pathlib import Path
 
+# 全局关闭 tqdm 进度条（必须在加载模型前设置）
+import os as _os
+_os.environ.setdefault("TQDM_DISABLE", "1")
+
 ROOT_DIR = Path(__file__).resolve().parent.parent
 CHROMA_DIR = str(ROOT_DIR / "chroma_db")
 _MODEL_DIR = ROOT_DIR / "models" / "xrunda" / "m3e-base"
@@ -33,7 +37,6 @@ def _get_collection():
         )
         print("[RAG] Loading embedding model (m3e-base, first time only)...", flush=True)
         ef = SentenceTransformerEmbeddingFunction(model_name=EMBED_MODEL)
-        ef._model.show_progress_bar = False  # 关闭编码进度条
         _client = chromadb.PersistentClient(path=CHROMA_DIR)
         _collection = _client.get_collection(
             COLLECTION_NAME, embedding_function=ef
